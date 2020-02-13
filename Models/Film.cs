@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
+using Newtonsoft.Json;
 
 namespace NetApi.Models
 {
@@ -43,5 +45,40 @@ namespace NetApi.Models
         public string description { get; set; }
 
         public List<Comment> comments { get; set; }
+        [JsonIgnore]
+        public List<Broadcast> broadcasts { get; set; }
+    }
+
+    public class FilmValidator : AbstractValidator<Film>
+    {
+        public FilmValidator()
+        {
+            RuleFor(film => film.director)
+                .NotNull()
+                .NotEmpty()
+                .MaximumLength(100)
+                .WithMessage("The length of film name have to be within 100 character and cannot be empty");
+            RuleFor(film => film.duration)
+                .NotNull()
+                .NotEmpty()
+                .LessThan(1000)
+                .WithMessage("The duration of the film must be less than 1000 mins and cannot be empty");
+            RuleFor(film => film.category)
+                .NotEmpty()
+                .NotEmpty()
+                .MaximumLength(50);
+            RuleFor(film => film.language)
+                .NotEmpty()
+                .NotEmpty()
+                .MaximumLength(10);
+            RuleFor(film => film.director)
+                .NotEmpty()
+                .NotEmpty()
+                .MaximumLength(50);
+            RuleFor(film => film.description)
+                .NotEmpty()
+                .NotEmpty()
+                .MaximumLength(200);
+        }
     }
 }

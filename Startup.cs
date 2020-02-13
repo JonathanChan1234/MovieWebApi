@@ -12,7 +12,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Pomelo.EntityFrameworkCore;
+using FluentValidation.AspNetCore;
 using NetApi.Data;
+using NetApi.Models;
+using FluentValidation;
+using Newtonsoft.Json;
 
 namespace NetApi
 {
@@ -28,8 +32,11 @@ namespace NetApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddFluentValidation()
+                .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddDbContext<MovieContext>(opt => opt.UseMySql(Configuration.GetConnectionString("MovieContext")));
+            services.AddTransient<IValidator<Film>, FilmValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

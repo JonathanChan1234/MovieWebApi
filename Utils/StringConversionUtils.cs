@@ -10,7 +10,7 @@ namespace NetApi.Utils
             try
             {
                 if (Int32.Parse(stringNumber) > 0) return Int32.Parse(stringNumber);
-                else throw new ArgumentException("Invalid page number");
+                else throw new ArgumentException("Invalid integer");
             }
             catch (FormatException)
             {

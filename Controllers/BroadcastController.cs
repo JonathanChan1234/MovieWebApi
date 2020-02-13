@@ -15,59 +15,52 @@ namespace NetApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FilmController : ControllerBase
+    public class BroadcastController : ControllerBase
     {
-        private readonly ILogger<FilmController> _logger;
+        private readonly ILogger<BroadcastController> _logger;
         private readonly MovieContext _context;
 
-        public FilmController(ILogger<FilmController> logger, MovieContext context)
+        public BroadcastController(ILogger<BroadcastController> logger, MovieContext context)
         {
             _logger = logger;
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Film>>> GetFilmList(
+        public async Task<ActionResult<IEnumerable<Broadcast>>> GetBroadcastList(
             [FromQuery(Name = "filmName")] string searchFilmName,
             [FromQuery(Name = "page")] string page)
         {
-            var filmsQuery = from film in _context.Films select film;
+            var broadcastQuery = from broadcast in _context.Broadcasts select broadcast;
             if (!string.IsNullOrEmpty(searchFilmName))
             {
-                filmsQuery = filmsQuery.Where(film => film.filmName.Contains(searchFilmName));
+                broadcastQuery = broadcastQuery.Where(broadcast => broadcast.film.filmName == searchFilmName);
             }
             try
             {
                 int parsedPageNumber = StringConversionUtils.stringToInt(page);
-                if (parsedPageNumber != 0)
-                {
-                    filmsQuery = filmsQuery.Skip(10 * (parsedPageNumber - 1)).Take(10);
-                }
-                else
-                {
-                    filmsQuery = filmsQuery.Take(10);
-                }
+                if (parsedPageNumber != 0) broadcastQuery = broadcastQuery.Skip(10 * (parsedPageNumber - 1)).Take(10);
+                else broadcastQuery = broadcastQuery.Take(10);
             }
             catch (Exception e)
             {
-                return StatusCode(
-                    (int)HttpStatusCode.BadRequest,
-                    new ErrorResponse(1, e.Message)
-                );
+                return StatusCode((int)HttpStatusCode.BadRequest, new ErrorResponse(1, e.Message));
             }
-            var films = await filmsQuery.ToListAsync();
-            return films;
+            var broadcasts = await broadcastQuery
+                .Include(broadcast => broadcast.film)
+                .ToListAsync();
+            return broadcasts;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Film>> GetFilmById(int id)
+        public async Task<ActionResult<Broadcast>> GetBroadcastById(int id)
         {
-            var film = await _context.Films.FindAsync(id);
-            if (film == null)
+            var broadcast = await _context.Broadcasts.FindAsync(id);
+            if (broadcast == null)
             {
                 return NotFound();
             }
-            return film;
+            return broadcast;
         }
 
         [HttpPost]
@@ -83,6 +76,7 @@ namespace NetApi.Controllers
         {
             if (film.filmId != id)
             {
+                Console.WriteLine(film.filmId);
                 return BadRequest();
             }
             if (!FilmExist(id))

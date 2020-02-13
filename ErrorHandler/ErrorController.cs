@@ -17,26 +17,16 @@ namespace NetApi.ErrorHandler
             {
                 return StatusCode(
                     (int)HttpStatusCode.InternalServerError,
-                    new ErrorResponse()
-                    {
-                        success = 0,
-                        errorno = 999,
-                        message = ex.Error.Message
-                    });
+                    new ErrorResponse(999, ex.Error.Message)
+                );
             }
             else
             {
                 return StatusCode(
                     (int)HttpStatusCode.InternalServerError,
-                    new ErrorResponse()
-                    {
-                        success = 0,
-                        errorno = 999,
-                        message = "ERROR OCCURRED!"
-                    });
+                    new ErrorResponse(999, "ERROR OCCURRED!")
+                );
             }
-
         }
-
     }
 }
