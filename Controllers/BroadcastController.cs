@@ -34,7 +34,7 @@ namespace NetApi.Controllers
             var broadcastQuery = from broadcast in _context.Broadcasts select broadcast;
             if (!string.IsNullOrEmpty(searchFilmName))
             {
-                broadcastQuery = broadcastQuery.Where(broadcast => broadcast.film.filmName == searchFilmName);
+                broadcastQuery = broadcastQuery.Where(broadcast => broadcast.filmAbstract.filmName == searchFilmName);
             }
             try
             {
@@ -47,7 +47,7 @@ namespace NetApi.Controllers
                 return StatusCode((int)HttpStatusCode.BadRequest, new ErrorResponse(1, e.Message));
             }
             var broadcasts = await broadcastQuery
-                .Include(broadcast => broadcast.film)
+                .Include(broadcast => broadcast.filmAbstract)
                 .ToListAsync();
             return broadcasts;
         }
@@ -72,21 +72,21 @@ namespace NetApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Film>> UpdateFilmById(int id, Film film)
+        public async Task<ActionResult<Broadcast>> UpdateBroadcastById(int id, Broadcast broadcast)
         {
-            if (film.filmId != id)
+            if (broadcast.broadcastId != id)
             {
-                Console.WriteLine(film.filmId);
                 return BadRequest();
             }
-            if (!FilmExist(id))
+            if (!BroadcastExist(id))
             {
                 return NotFound();
             }
-            _context.Entry(film).State = EntityState.Modified;
+            _context.Entry(broadcast).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();
+                if (!BroadcastExist(id)) return NotFound();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,26 +96,26 @@ namespace NetApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Film>> DeleteFilmById(int id)
+        public async Task<ActionResult<Broadcast>> DeleteBroadcastById(int id)
         {
-            var film = await _context.Films.FindAsync(id);
-            if (film == null) return NotFound();
-            _context.Entry(film).State = EntityState.Deleted;
+            var broadcast = await _context.Broadcasts.FindAsync(id);
+            if (broadcast == null) return NotFound();
+            _context.Entry(broadcast).State = EntityState.Deleted;
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FilmExist(id)) return NotFound();
+                if (!BroadcastExist(id)) return NotFound();
                 throw new Exception("Traffic Problem, please try again later");
             }
-            return film;
+            return broadcast;
         }
 
-        public bool FilmExist(int id)
+        public bool BroadcastExist(int id)
         {
-            return _context.Films.Any(film => id == film.filmId);
+            return _context.Broadcasts.Any(broadcast => id == broadcast.broadcastId);
         }
     }
 }

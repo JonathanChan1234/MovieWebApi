@@ -23,19 +23,19 @@ namespace NetApi.Models
         public int filmId { get; set; }
 
         [ForeignKey("filmId")]
-        public Film film { get; set; }
+        public virtual FilmAbstract filmAbstract { get; set; }
 
         [Column("houseId", TypeName = "int(10)")]
         [Required]
         public int houseId { get; set; }
 
         [ForeignKey("houseId")]
-        public House house { get; set; }
+        public virtual House house { get; set; }
 
         [Column("day", TypeName = "varchar(10)")]
         [Required]
         public string day;
 
-        public List<Ticket> tickets { get; set; }
+        public virtual ICollection<Ticket> tickets { get; set; }
     }
 }

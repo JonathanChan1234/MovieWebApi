@@ -31,7 +31,7 @@ namespace NetApi.Models
         public int broadcastId { get; set; }
 
         [ForeignKey("broadcastId")]
-        public Broadcast broadcast;
+        public virtual Broadcast broadcast { get; set; }
 
         [Column("valid", TypeName = "boolean")]
         [Required]
@@ -41,7 +41,7 @@ namespace NetApi.Models
         [Required]
         public int userId { get; set; }
         [ForeignKey("userId")]
-        public User user { get; set; }
+        public virtual User user { get; set; }
 
         [Column("ticketType", TypeName = "enum('student', 'adult')")]
         [Required]

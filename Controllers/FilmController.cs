@@ -55,7 +55,7 @@ namespace NetApi.Controllers
                     new ErrorResponse(1, e.Message)
                 );
             }
-            var films = await filmsQuery.ToListAsync();
+            var films = await filmsQuery.Include(film => film.broadcasts).ToListAsync();
             return films;
         }
 

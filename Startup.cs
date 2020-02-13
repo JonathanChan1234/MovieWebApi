@@ -35,7 +35,9 @@ namespace NetApi
             services.AddControllers()
                 .AddFluentValidation()
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-            services.AddDbContext<MovieContext>(opt => opt.UseMySql(Configuration.GetConnectionString("MovieContext")));
+            services.AddDbContext<MovieContext>(opt =>
+                opt.UseLazyLoadingProxies()
+                .UseMySql(Configuration.GetConnectionString("MovieContext")));
             services.AddTransient<IValidator<Film>, FilmValidator>();
         }
 

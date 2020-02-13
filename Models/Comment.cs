@@ -16,13 +16,13 @@ namespace NetApi.Models
         [Required]
         public int userId { get; set; }
         [ForeignKey("userId")]
-        public User author { get; set; }
+        public virtual User author { get; set; }
 
         [Column("filmId", TypeName = "int(10)")]
         [Required]
         public int filmId;
         [ForeignKey("filmId")]
-        public Film film { get; set; }
+        public virtual Film film { get; set; }
 
         [Column("comment", TypeName = "varchar(200)")]
         [MaxLength(200)]
