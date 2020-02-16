@@ -9,17 +9,27 @@ namespace NetApi.Seeding
 {
     public static class SeedData
     {
-        public static async void Initialize(IServiceProvider serviceProvider)
+        public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = new MovieContext(
                 serviceProvider.GetRequiredService<
                     DbContextOptions<MovieContext>>()))
             {
-                filmListSeeding(context);
-                houseSeeding(context);
-                await context.SaveChangesAsync();
-                broadcastSeeding(context);
-                await context.SaveChangesAsync();
+                using (var transaction = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        filmListSeeding(context);
+                        houseSeeding(context);
+                        broadcastSeeding(context);
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
             }
         }
 
@@ -32,41 +42,42 @@ namespace NetApi.Seeding
             context.Broadcasts.AddRange(
                 new Broadcast
                 {
-                    houseId = 1,
-                    filmId = 1,
+                    houseId = context.Houses.First(h => h.houseRow == 5).houseId,
+                    filmId = context.Films.First(f => f.filmName == "Return Of The Cuckoo").filmId,
                     dates = new DateTime(2015, 11, 16, 12, 10, 00)
                 },
                 new Broadcast
                 {
-                    houseId = 3,
-                    filmId = 1,
+                    houseId = context.Houses.First(h => h.houseRow == 4).houseId,
+                    filmId = context.Films.First(f => f.filmName == "Return Of The Cuckoo").filmId,
                     dates = new DateTime(2015, 11, 16, 13, 10, 00)
                 },
                 new Broadcast
                 {
-                    houseId = 1,
-                    filmId = 2,
+                    houseId = context.Houses.First(h => h.houseRow == 5).houseId,
+                    filmId = context.Films.First(f => f.filmName == "Suffragette").filmId,
                     dates = new DateTime(2015, 11, 16, 12, 10, 50)
                 },
                 new Broadcast
                 {
-                    houseId = 2,
-                    filmId = 2,
+                    houseId = context.Houses.First(h => h.houseRow == 6).houseId,
+                    filmId = context.Films.First(f => f.filmName == "Suffragette").filmId,
                     dates = new DateTime(2015, 11, 16, 13, 20, 00)
                 },
                 new Broadcast
                 {
-                    houseId = 1,
-                    filmId = 3,
+                    houseId = context.Houses.First(h => h.houseRow == 5).houseId,
+                    filmId = context.Films.First(f => f.filmName == "She Remembers, He Forgets").filmId,
                     dates = new DateTime(2015, 11, 16, 15, 20, 00)
                 },
                  new Broadcast
                  {
-                     houseId = 1,
-                     filmId = 4,
+                     houseId = context.Houses.First(h => h.houseRow == 5).houseId,
+                     filmId = context.Films.First(f => f.filmName == "Spectre").filmId,
                      dates = new DateTime(2015, 11, 16, 16, 20, 00)
                  }
             );
+            context.SaveChanges();
         }
 
         public static void houseSeeding(MovieContext context)
@@ -92,6 +103,7 @@ namespace NetApi.Seeding
                     houseColumn = 7
                 }
             );
+            context.SaveChanges();
         }
 
         public static void filmListSeeding(MovieContext context)
@@ -140,6 +152,7 @@ namespace NetApi.Seeding
                     description = "A cryptic message from the past sends James Bond on a rogue mission to Mexico City and eventually Rome, where he meets Lucia Sciarra (Monica Bellucci), the beautiful and forbidden widow of an infamous criminal...",
                 }
             );
+            context.SaveChanges();
         }
     }
 }

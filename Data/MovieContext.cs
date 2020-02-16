@@ -25,6 +25,13 @@ namespace NetApi.Data
                     .WithOne()
                     .HasForeignKey<Film>(f => f.filmId);
             });
+            // modelBuilder.Entity<Broadcast>(ob =>
+            // {
+            //     ob.Property("filmId").HasColumnName("filmId");
+            //     ob.HasOne(b => b.film)
+            //        .WithOne()
+            //        .HasForeignKey<FilmAbstract>(f => f.filmId);
+            // });
             #endregion
         }
 

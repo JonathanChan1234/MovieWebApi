@@ -34,7 +34,7 @@ namespace NetApi.Controllers
             var broadcastQuery = from broadcast in _context.Broadcasts select broadcast;
             if (!string.IsNullOrEmpty(searchFilmName))
             {
-                broadcastQuery = broadcastQuery.Where(broadcast => broadcast.filmAbstract.filmName == searchFilmName);
+                broadcastQuery = broadcastQuery.Where(broadcast => broadcast.film.filmName.Contains(searchFilmName));
             }
             try
             {
@@ -47,7 +47,7 @@ namespace NetApi.Controllers
                 return StatusCode((int)HttpStatusCode.BadRequest, new ErrorResponse(1, e.Message));
             }
             var broadcasts = await broadcastQuery
-                .Include(broadcast => broadcast.filmAbstract)
+                .Include(broadcast => broadcast.film)
                 .ToListAsync();
             return broadcasts;
         }
@@ -64,11 +64,11 @@ namespace NetApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Film>> PostFilm(Film film)
+        public async Task<ActionResult<Broadcast>> PostFilm(Broadcast broadcast)
         {
-            _context.Films.Add(film);
+            _context.Broadcasts.Add(broadcast);
             await _context.SaveChangesAsync();
-            return CreatedAtAction("GetFilmById", new { id = film.filmId }, film);
+            return CreatedAtAction("GetBroadcastById", new { id = broadcast.broadcastId }, broadcast);
         }
 
         [HttpPut("{id}")]

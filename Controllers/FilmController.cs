@@ -70,6 +70,14 @@ namespace NetApi.Controllers
             return film;
         }
 
+        [HttpGet]
+        [Route("abstract")]
+        public async Task<ActionResult<IEnumerable<FilmAbstract>>> GetFilmAbstract()
+        {
+            var FilmAbstractList = await _context.FilmsAbstract.ToListAsync();
+            return FilmAbstractList;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Film>> PostFilm(Film film)
         {

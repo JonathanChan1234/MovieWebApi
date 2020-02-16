@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
+using NetApi.Validators;
 
 namespace NetApi.Models
 {
@@ -23,7 +25,7 @@ namespace NetApi.Models
         public int filmId { get; set; }
 
         [ForeignKey("filmId")]
-        public virtual FilmAbstract filmAbstract { get; set; }
+        public virtual Film film { get; set; }
 
         [Column("houseId", TypeName = "int(10)")]
         [Required]
@@ -37,5 +39,27 @@ namespace NetApi.Models
         public string day;
 
         public virtual ICollection<Ticket> tickets { get; set; }
+    }
+
+    public class BroadcastValidator : AbstractValidator<Broadcast>
+    {
+        public BroadcastValidator()
+        {
+            RuleFor(broadcast => broadcast.dates)
+                .NotNull()
+                .NotEmpty()
+                .IsDateTime()
+                .WithMessage("Missing/Invalid broadcast date");
+            RuleFor(broadcast => broadcast.filmId)
+                .NotNull()
+                .NotEmpty()
+                .IsInteger()
+                .WithMessage("Missing/Invalid Film id");
+            RuleFor(broadcast => broadcast.houseId)
+                .NotNull()
+                .NotEmpty()
+                .IsInteger()
+                .WithMessage("Missing/Invalid broadcast house id");
+        }
     }
 }

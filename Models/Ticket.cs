@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FluentValidation;
+using NetApi.Validators;
 
 namespace NetApi.Models
 {
@@ -54,5 +56,46 @@ namespace NetApi.Models
         [Column("lastUpdatedAt", TypeName = "timestamp")]
         [Timestamp]
         public DateTime lastUpdatedAt { get; set; }
+    }
+
+    public class TicketValidator : AbstractValidator<Ticket>
+    {
+        public TicketValidator()
+        {
+            RuleFor(ticket => ticket.seatNo)
+                .NotNull()
+                .NotEmpty()
+                .IsInteger()
+                .WithMessage("Missing/Invalid seat no");
+            RuleFor(ticket => ticket.seatName)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Missing/Invalid seat name");
+            RuleFor(ticket => ticket.broadcastId)
+                .NotNull()
+                .NotEmpty()
+                .IsInteger()
+                .WithMessage("Missing/Invalid broadcast id");
+            RuleFor(ticket => ticket.valid)
+                .NotNull()
+                .NotEmpty()
+                .IsBoolean()
+                .WithMessage("Missing/Invalid ticket valid");
+            RuleFor(ticket => ticket.userId)
+                .NotNull()
+                .NotEmpty()
+                .IsInteger()
+                .WithMessage("Missing/Invalid user id");
+            RuleFor(ticket => ticket.ticketType.ToString())
+                .NotNull()
+                .NotEmpty()
+                .IsEnumName(typeof(TicketType), caseSensitive: false)
+                .WithMessage("Missing/Invalid ticket type");
+            RuleFor(ticket => ticket.ticketFee)
+                .NotNull()
+                .NotEmpty()
+                .IsInteger()
+                .WithMessage("Missing/Invalid ticket type");
+        }
     }
 }

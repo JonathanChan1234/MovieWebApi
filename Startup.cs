@@ -37,8 +37,10 @@ namespace NetApi
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddDbContext<MovieContext>(opt =>
                 opt.UseLazyLoadingProxies()
-                .UseMySql(Configuration.GetConnectionString("MovieContext")));
+                    .UseMySql(Configuration.GetConnectionString("MovieContext")));
             services.AddTransient<IValidator<Film>, FilmValidator>();
+            services.AddTransient<IValidator<Broadcast>, BroadcastValidator>();
+            services.AddTransient<IValidator<Ticket>, TicketValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
